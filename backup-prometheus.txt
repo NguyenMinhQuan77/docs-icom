@@ -1,0 +1,531 @@
+
+global:
+  scrape_interval: 1m
+  evaluation_interval: 1m
+
+scrape_configs:
+  - job_name: 'vmware'
+    scrape_timeout: 60s
+    metrics_path: /metrics
+    params:
+      vsphere_host: [default]
+    static_configs:
+      - targets: ['localhost:9272']
+# ── Node + Process HCI Exporter ─────────────────────────────────────
+
+  - job_name: 'node'
+    static_configs:
+      - targets:
+          - '125.212.226.20:9100'
+          - '125.212.226.19:9100'
+#          - '14.225.53.106:9100'
+          - '192.168.200.210:9100'
+          - '192.168.200.151:9100'
+          - '192.168.200.152:9100'
+          - '192.168.200.165:9100'
+          - '192.168.200.166:9100'
+          - '192.168.200.21:9100'
+          - '192.168.200.154:9100'
+          - '192.168.200.155:9100'
+          - '192.168.200.167:9100'
+          - '192.168.200.161:9100'
+          - '192.168.200.162:9100'
+          - '192.168.200.163:9100'
+          - '192.168.200.25:9100'
+          - '192.168.200.26:9100'
+          - '192.168.200.190:9100'
+          - '192.168.200.191:9101'
+#          - '192.168.200.200:9100'
+          - '192.168.200.201:9100'
+          - '192.168.200.50:9100'
+          - '192.168.200.51:9100'
+          - '192.168.200.52:9100'
+          - '192.168.200.53:9100'
+          - '192.168.200.54:9100'
+          - '192.168.200.55:9100'
+          - '192.168.200.166:9256'
+          - '192.168.200.165:9256'
+          - '192.168.200.151:9256'
+          - '192.168.200.152:9256'
+          - '192.168.200.154:9256'
+          - '192.168.200.155:9256'
+          - '192.168.200.25:9256'
+#          - '192.168.200.202:9100'
+          - '192.168.200.186:9100'
+#          - '192.168.200.187:9100'
+          - '192.168.200.188:9100'
+#          - '192.168.200.189:9100'
+          - '192.168.200.195:9100'
+          - '192.168.200.65:9100'
+          - '192.168.200.66:9100'
+          - '192.168.200.67:9100'
+          - '192.168.200.68:9100'
+#          - '192.168.200.69:9100'
+#          - '192.168.200.70:9100'
+          - '192.168.200.71:9100'
+          - '192.168.200.72:9100'
+#          - '192.168.200.80:9100'
+          - '192.168.200.81:9100'
+          - '192.168.200.82:9100'
+          - '192.168.200.91:9100'
+          - '192.168.200.132:9100'
+          - '192.168.200.60:9100'
+          - '192.168.200.133:9100'
+          - '192.168.200.171:9100'
+          - '192.168.200.150:9100'
+          - '192.168.200.83:9100'
+          - '192.168.200.84:9100'
+          - '192.168.200.92:9100'
+          - '192.168.200.93:9100'
+          - '192.168.200.75:9100'
+          - '192.168.200.76:9100'
+          - '192.168.200.77:9100'
+          - '192.168.200.205:9100'
+          - '192.168.200.206:9100'
+          - '192.168.200.204:9100'
+
+
+# ── MariaDB HCI Exporter ─────────────────────────────────────
+  - job_name: 'mariadb-hci'
+    static_configs:
+      - targets:
+          - '192.168.200.165:9104'
+          - '192.168.200.166:9104'
+          - '192.168.200.167:9104'
+# ── PostgreSQL HCI Exporter ───────────────────────────────────
+  - job_name: 'postgresql-hci'
+    static_configs:
+      - targets:
+          - '192.168.200.165:9187'
+          - '192.168.200.166:9187'
+          - '192.168.200.167:9187'
+
+
+
+
+
+  - job_name: 'blackbox-ssl-cert'
+    metrics_path: /probe
+    params:
+      module: [https_ssl_cert]
+    static_configs:
+      - targets:
+          - https://mypoint.com.vn
+          - https://aler.mypoint.com.vn
+          - https://api.mypoint.com.vn
+          - https://api.sandbox.mypoint.com.vn
+#          - https://jenkins.mypoint.com.vn
+          - https://evnpoint.com
+          - https://api.evnpoint.com
+          - https://api.sandbox.evnpoint.com
+          - https://cms.evnpoint.com
+          - https://cms.sandbox.evnpoint.com
+          - https://cms.busuu-viettel.i-com.vn
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+
+      - source_labels: [__param_target]
+        target_label: instance
+
+      - target_label: __address__
+        replacement: 127.0.0.1:9115
+
+  - job_name: 'blackbox-partner-service'
+    metrics_path: /probe
+    params:
+      module: [tcp_connect]
+    static_configs:
+      - targets:
+#          - 10.72.97.102:8050
+#          - 103.153.254.10:8023
+#          - check.mypoint.com.vn:443
+#          - gateway.finviet.com.vn:9000
+        # ==================== EVN / ĐIỆN LỰC ====================
+        # EVN Hà Nội - vitapay_call_evn_hanoi.conf (nginx :8022)
+#        - 103.68.241.77:8080
+#        - 10.9.126.11:8809          # /ConnectToEVNHN → FPT gateway
+        - 10.9.126.12:8801          # /ConnectToEVNHN_v2/ → FPT gateway Ver2
+
+        # EVN HCM - vitapay_call_evn_hcm.conf (nginx :8023)
+        - 103.153.254.10:8023       # /ConnectToEVNHCM
+
+        # EVN Miền Nam - vitapay_call_evn_miennam.conf (nginx :8024)
+        - 103.153.254.10:8024       # /ConnectToEVNSPCPROD
+
+        # EVN Miền Bắc - vitapay_call_evn_mienbac.conf (nginx :8025)
+        - 171.244.49.178:8025       # /ConnectToNPC → Viettel node
+
+        # EVN Miền Trung - vitapay_call_evn_mientrung.conf (nginx :8026)
+        - 10.72.97.102:8050         # /ConnectToEVNCPC_Ver2/ → EVNCPC internal Ver2
+        # DISABLED: TCP connection failed | vitapay_call_evn_mientrung.conf → /ConnectToEVNCPC ws_paytech.asmx
+
+        # EVN Miền Trung dev/staging - general.vitapay.conf (nginx :443)
+        #- bank.cpc.vn:8069         # DISABLED: TCP connection failed | general.vitapay.conf → /evncpc_api dev/staging
+
+        # EVN Miền Trung staging - dev_vitapay_call_evn_mientrung.conf (nginx :8036)
+        #- ctt2-api-stag.cpc.vn:8050 # / → staging API
+        - qlthtd.cpc.vn:443         # /qlthtd → quản lý thoả thuận dịch vụ
+        - doisoat-banking-api-stag.cpc.vn:443  # /doisoatbank → đối soát banking staging
+        - banking-id-stag.cpc.vn:443           # /bankid → banking ID staging
+
+        # EVNPoint - vitapay_call_evn_providerHUB.conf (nginx :8062)
+        #            vitapay_call_point_api.conf (nginx :8027)
+        #            call_point_api.conf (nginx :8032)
+        - api.evnpoint.com:443      # / → EVNPoint API production
+        - api-prod.evnpoint.com:443 # / → EVNPoint upstream backend
+
+        # ==================== NGÂN HÀNG ====================
+        # BIDV - vitapay_call_bidv_api.conf (nginx :8016)
+        - ebank.bidv.com.vn:443     # /recom → eBank WS + Recon
+
+        # BIDV Open API - vitapay_call_3rd_partners.conf (nginx :8011)
+        - openapi.bidv.com.vn:443   # /bidv-openapi → Open API
+
+        # PVComBank - vitapay_call_pvc_api.conf (nginx :8014)
+        - apis-prod.pvcombank.io:443                    # /emoney-chiho/ → eMoney pay-on-behalf
+        - awsapi.pvcombank.com.vn:443                   # /pvc-ibft → IBFT transfer
+        - connect.cloud-sg.pvcombank.com.vn:443         # /pvcb_token → OAuth2 token
+
+        # MBBank - vitapay_call_mb_api.conf (nginx :8019)
+        - api-private.mbbank.com.vn:443   # /mb-api/ → private API
+
+        # MSB - vitapay_call_msb_api.conf (nginx :8015)
+        - apigateway.msb.com.vn:443       # /msb-api/ → API gateway
+
+        # VietinBank - vitapay_call_icb_api.conf (nginx :8028)
+        - api.vietinbank.vn:443           # /icb-api → public API v1
+
+        # Sacombank - vitapay_call_sacombank_api.conf (nginx :8017)
+        - partner.sacombank.com.vn:443    # /sacombank → epaygw/stb
+
+        # Mastercard - vitapay_call_mpgs_api.conf (nginx :8012)
+        - ap-gateway.mastercard.com:443   # /mpgs-api/ → MPGS AP region
+
+        # Vietcombank - vitapay_call_vcb_api.conf (nginx :8018)
+        - 171.244.49.178:8024             # /vcb-api → VCB qua Viettel node
+
+        # ==================== THANH TOÁN / CHUYỂN MẠCH ====================
+        # Finviet - vitapay_call_finviet.conf (nginx :8029)
+        - gateway.finviet.com.vn:9000     # /finviet-api/ → payment gateway
+
+        # NAPAS - vitapay_call_3rd_partners.conf (nginx :8011)
+        - dps.napas.com.vn:443            # /napas-api → DPS chuyển mạch
+        #- vasagency.napas.com.vn:48775   # DISABLED: TCP connection failed | vitapay_call_3rd_partners.conf → /napas-billing VAS Agency
+
+        # ZaloPay - vitapay_call_3rd_partners.conf (nginx :8011)
+        - openapi.zalopay.vn:443          # /zalopay/ → Open API
+
+        # ==================== POINT / MYPOINT ====================
+        # vitapay_call_point_api.conf (nginx :8027)
+        # call_point_api.conf (nginx :8032)
+        - api.mypoint.com.vn:443          # /mypoint-api/ → MyPoint API chính
+        - mc.mypoint.com.vn:443           # /mypoint-merchant/ → Merchant API
+        - check.mypoint.com.vn:443        # health-check domain
+
+        # Mobifone - call_point_api.conf (nginx :8032)
+        - api.mobifone.vn:443             # /mobifone-api → Mobifone API
+
+        # Hunosmart - call_hunosmart_api.conf (nginx :8034)
+        - api.hunosmart.com:443           # /hunosmart-api/ → API v1
+
+        # ==================== FOXPAY (FPT) ====================
+        # vitapay_call_fpt_portal.conf (nginx :5555)
+        - portal-v2.foxpay.vn:443         # /fpt-portal/ → portal v2
+
+        # vitapay_call_fpt_refun.conf (nginx :5556)
+        # vitapay_call_fpt_refun_api.conf (nginx :5557)
+        # vitapay_call_fpt_stautus_refun.conf (nginx :5558)
+        - refund.foxpay.vn:443            # /fpt-refun token | /fpt-refun-api refund | /fpt-refun-status status
+
+        # vitapay_call_sftp.conf (nginx :5559) - upstream backend_servers
+        # DISABLED: TCP connection failed | vitapay_call_sftp.conf → FoxPay SFTP backend
+
+        # ==================== 3RD PARTY PARTNERS ====================
+        # vitapay_call_3rd_partners.conf (nginx :8011)
+
+        # XPay
+        - partner.xpay.vn:6060            # /xpay → Partner API
+        - partner.xpay.vn:6868            # /xpay-api → Partner API v1
+        - partner.xpay.vn:2100            # /xpay-partner → Partner API port 2100
+
+        # SMS Brandname
+        - 1.53.252.177:8082               # /SMSPAYTECH → Brandname SMS API
+
+        # iMediatech / iTopup
+        - topup2.imediatech.com.vn:443    # /imedia-production → topup productio
+        # DISABLED: TCP connection failed | vitapay_call_3rd_partners.conf → /imedia-sanbox iTopup sandbox
+
+        # IPN Partners
+        - gpayment.starthing.com:443      # /ipn-vplus → GPayment IPN
+        - webhook.g99.vn:443             # DISABLED: TCP connection failed | vitapay_call_3rd_partners.conf → /ipn-vitapay-gmobile G99/GMobile IPN
+        - id.vplay.vn:443                 # /ipn-vtvline → VPlay/VTVLine IPN
+        - api-core.startup40.com:443      # /ipn-futurelang → Startup40/FutureLang IPN
+        - gateway.medon.vn:443            # /ipn-medon → MeDon campaign IPN
+        - api.365medihome.com.vn:443      # /medihome → 365MediHome patient order IPN
+        - naptien.thanhtoan247.net.vn:8082  # DISABLED: TCP connection failed | vitapay_call_3rd_partners.conf → /epay-billing Thanhtoan247 CDV nạp tiền
+
+        # Storage / AI
+        - s3-sgn10.fptcloud.com:443       # /s3-cloud/ → FPT Cloud S3
+        - api.fpt.ai:443                  # /ekyc → FPT AI Vision/eKYC
+
+        # ==================== NOTIFICATION / INFRA ====================
+        # vitapay_call_notification.conf (nginx :8042)
+        - api.telegram.org:443            # /telegram-api/ → Telegram Bot notification
+        - email.ap-southeast-1.amazonaws.com:443  # /send-mail/ → AWS SES email
+
+        # vitapay_call_google.conf (nginx :8041)
+        - fcm.googleapis.com:443          # /google-fcm → FCM push notification
+        - oauth2.googleapis.com:443       # /google-oauth2-token → OAuth2 token
+        - www.googleapis.com:443          # /google-oauth2-access-token → userinfo
+
+        # vitapay_call_captcha_cloudflare.conf (nginx :8043)
+        - challenges.cloudflare.com:443   # /captcha-cloudflare → Turnstile CAPTCHA
+
+        # ==================== ĐỐI TÁC KHÁC ====================
+        # vitapay_call_igloo.conf (nginx :8033)
+        - api.iglooinsure.com:443         # /igloo-api → bảo hiểm Igloo
+
+        # vitapay_call_simo.conf (nginx :8063)
+        # - mgsimo.sbv.gov.vn:441           # / → NHNN SIMO API
+
+        # vitapay_call_wasaco.conf (nginx :8030)
+        - bank.cawaco.vn:443              # /wasaco-api → CAWACO nước sạch nông thôn
+
+        # vitapay_call_nongthon.conf (nginx :8046)
+        - paybillapi_v2.capnuocnongthon.com.vn:443   # /nongthon-api/ → bill API
+        - authenserver.capnuocnongthon.com.vn:443    # /nongthon-auth → auth server
+
+        # vitapay_call_citywork.conf (nginx :8035)
+        - apppay.citywork.vn:443          # /citywork-api → paytech API
+
+        # vitapay_call_trangnguyen.conf (nginx :8044)
+        - tne-prod-api.tnmath.edu.vn:443  # /trangnguyen-api → TNE IPN production
+
+        # vitapay_call_trangnguyen_api.conf (nginx :8048)
+        - tne-api.tinhvan.com:443         # /trangnguyen-api → Tinh Van IPN
+
+        # vitapay_call_viettel.conf (nginx :8045)
+        - api26.viettelmoney.vn:443       # /viettelmoney-api → Viettel Money
+
+        # vitapay_call_vnpt_kyc.conf (nginx :8013)
+        - api.idg.vnpt.vn:443             # /vnpt-kyc/ → VNPT eKYC
+
+        # ==================== SMS GATEWAY ====================
+        # point_call_smsgw.conf (nginx :5001)
+        - g3g4.vn:8008                    # /sms-neo4j → SMS NEO4J
+        - 123.31.36.151:8888              # /sms-vnpt → VNPT SMS BN
+
+        # ==================== AFFILIATE ====================
+        # affi_call_partners.conf (nginx :8202)
+        - affiliate.tiki.com.vn:443       # /tiki-api-v2/ → Tiki affiliate v2
+        - api.lazada.vn:443               # /lazada-api → Lazada marketing
+        - api.accesstrade.vn:443          # /accesstrade-api → AccessTrade transactions
+        - open-api.affiliate.shopee.vn:443 # /shopee-api/ → Shopee affiliate GraphQL
+        - hoanghamobile.com:443           # /hoangha-api/ → Hoang Ha Mobile
+
+        # affi_call_uudaigoicuoc.conf (nginx :8201)
+        - uudaigoicuoc.com:443            # /affi-api-order, /affi-api-auth → Ưu đãi gói cước
+
+          # HanoiGo - vitapay_call_hanoigo.conf (nginx :8050)
+        - hanoigo.hanoi.gov.vn:443        # /hanoigo-api → HanoiGo IPN
+
+        # EVN Miền Trung - vitapay_call_evn_mientrung.conf (nginx :8026)
+#        - 10.72.97.102:8050         # /ConnectToEVNCPC_Ver2/ → EVNCPC internal Ver2
+#        - bank.cpc.vn:8050          # /ConnectToEVNCPC → ws_paytech.asmx (prod)
+
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 192.168.200.21:9115
+
+  - job_name: 'federate-onstream-prom'
+    metrics_path: /federate
+    scheme: http
+    scrape_interval: 30s
+    scrape_timeout: 25s
+    honor_labels: true
+    params:
+      'match[]':
+        - '{job="prometheus"}'
+        - '{job="node"}'
+        - '{job="blackbox"}'
+        - '{job="mariadb"}'
+        - '{__name__=~"up|probe_success|node_.+|mysql_.+|mariadb_.+|prometheus_.+|scrape_.+"}'
+    static_configs:
+      - targets:
+          - 'prometheus-onstream.i-com.vn'
+    basic_auth:
+      username: admin
+      password: 'Icom@2025'
+
+  - job_name: 'federate-vas-vnp-prom'
+    metrics_path: /federate
+    scheme: http
+    scrape_interval: 30s
+    scrape_timeout: 25s
+    honor_labels: true
+    params:
+      'match[]':
+        - '{job="prometheus"}'
+        - '{job="node_exporters"}'
+        - '{job="mysql"}'
+        - '{__name__=~"up|node_.+|mysql_.+|mysqld_.+|prometheus_.+|scrape_.+"}'
+    static_configs:
+      - targets:
+          - 'prometheus-vas-vnp.i-com.vn'
+    basic_auth:
+      username: admin
+      password: 'Icom@2025'
+
+  - job_name: 'federate-evnpoint-prom'
+    metrics_path: /federate
+    scheme: http
+    scrape_interval: 30s
+    scrape_timeout: 25s
+    honor_labels: true
+    params:
+      'match[]':
+        - '{job="prometheus"}'
+        - '{job="node_exporters"}'
+        - '{job="haproxy_metrics"}'
+        - '{job="kafka_metrics"}'
+        - '{job="mongodb_metrics"}'
+        - '{job="cassandra_metrics"}'
+        - '{job="elasticsearch_metrics"}'
+        - '{__name__=~"up|node_.+|haproxy_.+|kafka_.+|mongodb_.+|cassandra_.+|elasticsearch_.+|prometheus_.+|scrape_.+|process_.+|go_.+"}'
+    static_configs:
+      - targets:
+          - 'prometheus.evnpoint.com'
+    basic_auth:
+      username: admin
+      password: 'Icom@2025'
+
+  - job_name: 'federate-mypoint-prom'
+    metrics_path: /federate
+    scheme: https
+    scrape_interval: 30s
+    scrape_timeout: 25s
+    honor_labels: true
+    params:
+      'match[]':
+        - '{job="mypoint-cluster"}'
+        - '{__name__=~"up|node_.+|process_.+|go_.+|prometheus_.+|scrape_.+"}'
+    static_configs:
+      - targets:
+          - 'momia.mypoint.com.vn'
+    tls_config:
+       insecure_skip_verify: true
+
+  - job_name: 'federate-cartoon-prom'
+    metrics_path: /federate
+    scheme: http
+    scrape_interval: 30s
+    scrape_timeout: 25s
+    honor_labels: true
+    params:
+      'match[]':
+        - '{job="cartoon-nodes"}'
+        - '{__name__=~"up|node_.+|process_.+|go_.+|prometheus_.+|scrape_.+"}'
+    static_configs:
+      - targets:
+          - '14.225.70.66:9090'
+
+  - job_name: 'federate-blackbox-partner-service'
+    scrape_interval: 15s
+    honor_labels: true
+    metrics_path: /federate
+
+    params:
+      'match[]':
+        - '{job="blackbox-partner-service"}'
+
+    static_configs:
+      - targets:
+          - '103.153.254.10:9090'
+
+
+  - job_name: 'federate-cloudphone-prom'
+    metrics_path: /federate
+    scheme: http
+    scrape_interval: 30s
+    scrape_timeout: 25s
+    honor_labels: true
+    params:
+      'match[]':
+        - '{job="cloudphone-nodes"}'
+        - '{__name__=~"up|node_.+|process_.+|go_.+|prometheus_.+|scrape_.+", job="cloudphone-nodes"}'
+    static_configs:
+      - targets:
+          - '14.225.70.225'
+
+  - job_name: 'federate-busuu-prom'
+    metrics_path: /federate
+    scheme: http
+    scrape_interval: 30s
+    scrape_timeout: 25s
+    honor_labels: true
+
+    params:
+      'match[]':
+        - '{job=~"busuu-.*"}'
+        - '{__name__=~"ALERTS|ALERTS_FOR_STATE",team="busuu"}'
+
+    static_configs:
+      - targets:
+          - '125.212.226.18:9090'
+
+  - job_name: 'federate-aitutor-prom'
+    metrics_path: /federate
+    scheme: http
+    scrape_interval: 30s
+    scrape_timeout: 25s
+    honor_labels: true
+    params:
+      'match[]':
+        - '{job="aitutor-node"}'
+        - '{__name__=~"up|node_.+|process_.+|go_.+|prometheus_.+|scrape_.+", job="busuu-node"}'
+    static_configs:
+      - targets:
+          - '14.225.68.77:9090'
+
+
+  - job_name: 'federate-vtv-prime-prom'
+    metrics_path: /federate
+    scheme: http
+    scrape_interval: 30s
+    scrape_timeout: 25s
+    honor_labels: true
+    basic_auth:
+      username: 'admin'
+      password: 'Icom@2025'
+    params:
+      'match[]':
+        - '{job="node-vtvprime"}'
+        - '{__name__=~"up|node_.+|process_.+|go_.+|prometheus_.+|scrape_.+", job="node-vtvprime"}'
+        - '{job="mysql-vtvprime"}'
+    static_configs:
+      - targets:
+          - 'prometheus-vtvprime.i-com.vn'
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['localhost:9093']
+rule_files:
+#  - "/home/hunghv/prometheus-stack/rules/alert.rules.yml"
+   - "/home/hunghv/prometheus-stack/rules/alerts-hci.yml"
+   - "/home/hunghv/prometheus-stack/rules/alerts-cartoon.yml"
+   - "/home/hunghv/prometheus-stack/rules/alerts-mypoint.yml"
+   - "/home/hunghv/prometheus-stack/rules/alerts-vas_vnpt.yml"
+   - "/home/hunghv/prometheus-stack/rules/alerts-epoint.yml"
+   - "/home/hunghv/prometheus-stack/rules/alerts-cpu-ram-disk-agnet.yml"
+   - "/home/hunghv/prometheus-stack/rules/alerts-cloudphone.yml"
+   - "/home/hunghv/prometheus-stack/rules/alerts-busuu.yml"
+   - "/home/hunghv/prometheus-stack/rules/alerts-aitutor.yml"
+   - "/home/hunghv/prometheus-stack/rules/alerts-vtvprime.yml"
+#   - "/home/hunghv/prometheus-stack/rules/alerts-onstream.yml"
+

@@ -1,0 +1,9 @@
+echo "===== $(hostname) / $(hostname -I) ====="
+grep -v -E '^\s*(#|$)' /etc/crontab | grep -v run-parts
+for f in /etc/cron.d/*; do grep -H -v -E '^\s*(#|$)' "$f"; done | grep -v -E "atop|e2scrub|popularity|sysstat"
+for u in $(cut -d: -f1 /etc/passwd); do crontab -l -u "$u" 2>/dev/null | grep -v -E '^\s*(#|$)' | sed "s/^/[$u] /"; done
+journalctl -u cron.service | grep -i mariadb | tail -5
+systemctl is-active mariadb postgresql 2>/dev/null
+
+
+grep -rn maria /etc/crontab /etc/cron.d/ /var/spool/cron/ 2>/dev/null

@@ -1,0 +1,1 @@
+sudo du -h --max-depth=1 /home/logging 2>/dev/null | sort -hr
