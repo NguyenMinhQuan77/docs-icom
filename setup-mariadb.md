@@ -60,10 +60,10 @@ Truy cập vào MariaDB console:
 ```bash
 sudo mysql -u root -p
 ```
-Thực thi các lệnh SQL sau để tạo user và cấp quyền (thay thế `P@ssw0rdReplication` bằng mật khẩu đủ mạnh theo tiêu chuẩn công ty):
+Thực thi các lệnh SQL sau để tạo user và cấp quyền (thay thế `user123n` bằng mật khẩu đủ mạnh theo tiêu chuẩn công ty):
 ```sql
-CREATE USER 'repl_user'@'192.168.78.71' IDENTIFIED BY 'P@ssw0rdReplication';
-GRANT REPLICATION SLAVE ON *.* TO 'repl_user'@'192.168.78.71';
+CREATE USER 'user_slave'@'192.168.78.71' IDENTIFIED BY 'user123n';
+GRANT REPLICATION SLAVE ON *.* TO 'user_slave'@'192.168.78.71';
 FLUSH PRIVILEGES;
 ```
 
@@ -113,8 +113,8 @@ STOP SLAVE;
 
 CHANGE MASTER TO
   MASTER_HOST='192.168.78.223',
-  MASTER_USER='repl_user',
-  MASTER_PASSWORD='P@ssw0rdReplication',
+  MASTER_USER='user_slave',
+  MASTER_PASSWORD='user123n',
   MASTER_LOG_FILE='mysql-bin.000001',
   MASTER_LOG_POS=328;
 
