@@ -25,13 +25,9 @@ Tài liệu hướng dẫn cài **mysqld_exporter** (exporter chính thức củ
 
 ## 1. Cấu hình MariaDB
 
-### 1.1. Xác định tên service MariaDB
+### 1.1. Tên service MariaDB
 
-```bash
-systemctl list-units --type=service | grep -Ei 'mariadb|mysql'
-```
-
-Tên service có thể là `mariadb.service` hoặc `mysql.service`. Ghi lại tên này để dùng ở bước restart và trong unit file (Bước 5).
+Theo hệ thống, tên service database của bạn hiện tại là `mariadb.service`. Tên này sẽ được sử dụng cho các lệnh restart và cấu hình systemd ở Bước 5.
 
 ### 1.2. Bật performance_schema
 
@@ -50,7 +46,7 @@ performance-schema-consumer-events-statements-history = ON
 performance-schema-consumer-statements-digest = ON
 ```
 
-Restart MariaDB (thay `mariadb` bằng `mysql` nếu tên service khác):
+Restart MariaDB:
 
 ```bash
 systemctl restart mariadb
@@ -71,7 +67,6 @@ FLUSH PRIVILEGES;
 ```
 
 > **Lưu ý**
-> - `SLAVE MONITOR` chỉ có từ MariaDB **10.5.9+**. Bản cũ hơn thì bỏ quyền này.
 > - MariaDB coi `localhost` (socket) và `127.0.0.1` (TCP) là 2 host khác nhau, nên tạo user cho cả hai.
 > - Đổi `StrongPass@123` thành mật khẩu thật.
 
@@ -163,7 +158,7 @@ mysql --defaults-file=/etc/mysqld_exporter/.my.cnf -e "SELECT CURRENT_USER(), VE
 
 ## 5. Tạo systemd service
 
-> Nếu service MariaDB tên là `mysql.service` thì sửa dòng `After=` tương ứng.
+Chạy kịch bản sau để tạo service file với thông số chuẩn đã bao gồm `After=mariadb.service`:
 
 ```bash
 cat > /etc/systemd/system/mysqld_exporter.service <<'EOF'
@@ -236,7 +231,7 @@ systemctl status mysqld_exporter
 
 ## 6. Mở firewall
 
-Chỉ cho phép IP của Prometheus server (thay `10.0.0.10`):
+Chỉ cho phép IP của Prometheus server (thay `10.0.0.10` bằng IP của server Prometheus của bạn):
 
 **ufw (Ubuntu/Debian)**
 
