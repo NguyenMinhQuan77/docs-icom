@@ -2,8 +2,8 @@
 
 **Thông tin Môi trường Triển khai**
 * **Hệ điều hành:** Ubuntu 22.04.1 LTS (Jammy Jellyfish)
-* **Master Node:** 192.168.78.71
-* **Slave Node:** 192.168.78.223
+* **Master Node:** 192.168.78.223
+* **Slave Node:** 192.168.78.71
 * **Cấp quyền:** Yêu cầu quyền `root` hoặc `sudo` trên cả hai máy chủ.
 
 ---
@@ -30,12 +30,12 @@ sudo mysql_secure_installation
 
 **4. Cấu hình Tường lửa (UFW)**
 Chỉ cho phép các máy chủ trong dải mạng nội bộ hoặc cấu hình mở port 3306 cho nhau:
-*   **Trên Master:** `sudo ufw allow from 192.168.78.223 to any port 3306`
-*   **Trên Slave:** `sudo ufw allow from 192.168.78.71 to any port 3306`
+*   **Trên Master:** `sudo ufw allow from 192.168.78.71 to any port 3306`
+*   **Trên Slave:** `sudo ufw allow from 192.168.78.223 to any port 3306`
 
 ---
 
-## PHẦN 2: Cấu hình Master Node (IP: 192.168.78.71)
+## PHẦN 2: Cấu hình Master Node (IP: 192.168.78.223)
 
 **1. Chỉnh sửa file cấu hình MariaDB**
 Mở file cấu hình chính của MariaDB:
@@ -44,7 +44,7 @@ sudo nano /etc/mysql/mariadb.conf.d/50-server.cnf
 ```
 Tìm các dòng sau và chỉnh sửa/thêm vào mục `[mysqld]`:
 ```ini
-bind-address            = 192.168.78.71
+bind-address            = 192.168.78.223
 server-id               = 1
 log_bin                 = /var/log/mysql/mysql-bin.log
 # binlog_do_db          = ten_db_can_dong_bo # (Tuỳ chọn: Nếu chỉ muốn đồng bộ 1 DB cụ thể, bỏ comment dòng này)
@@ -62,8 +62,8 @@ sudo mysql -u root -p
 ```
 Thực thi các lệnh SQL sau để tạo user và cấp quyền (thay thế `P@ssw0rdReplication` bằng mật khẩu đủ mạnh theo tiêu chuẩn công ty):
 ```sql
-CREATE USER 'repl_user'@'192.168.78.223' IDENTIFIED BY 'P@ssw0rdReplication';
-GRANT REPLICATION SLAVE ON *.* TO 'repl_user'@'192.168.78.223';
+CREATE USER 'repl_user'@'192.168.78.71' IDENTIFIED BY 'P@ssw0rdReplication';
+GRANT REPLICATION SLAVE ON *.* TO 'repl_user'@'192.168.78.71';
 FLUSH PRIVILEGES;
 ```
 
@@ -82,7 +82,7 @@ SHOW MASTER STATUS;
 
 ---
 
-## PHẦN 3: Cấu hình Slave Node (IP: 192.168.78.223)
+## PHẦN 3: Cấu hình Slave Node (IP: 192.168.78.71)
 
 **1. Chỉnh sửa file cấu hình MariaDB**
 Mở file cấu hình:
@@ -91,7 +91,7 @@ sudo nano /etc/mysql/mariadb.conf.d/50-server.cnf
 ```
 Tìm và cấu hình các thông số sau trong block `[mysqld]`:
 ```ini
-bind-address            = 192.168.78.223
+bind-address            = 192.168.78.71
 server-id               = 2
 relay-log               = /var/log/mysql/mysql-relay-bin.log
 read_only               = 1
@@ -112,7 +112,7 @@ Thực thi lệnh sau (thay thế `MASTER_LOG_FILE` và `MASTER_LOG_POS` bằng 
 STOP SLAVE;
 
 CHANGE MASTER TO
-  MASTER_HOST='192.168.78.71',
+  MASTER_HOST='192.168.78.223',
   MASTER_USER='repl_user',
   MASTER_PASSWORD='P@ssw0rdReplication',
   MASTER_LOG_FILE='mysql-bin.000001',
@@ -134,7 +134,7 @@ Hãy chú ý hai dòng sau, nếu cả hai đều báo **Yes** nghĩa là quá t
 ## PHẦN 4: Hoàn thiện & Khắc phục sự cố
 
 **1. Mở khoá bảng trên Master**
-Quay lại console MariaDB trên **Master Node (192.168.78.71)** và gõ lệnh để giải phóng lock:
+Quay lại console MariaDB trên **Master Node (192.168.78.223)** và gõ lệnh để giải phóng lock:
 ```sql
 UNLOCK TABLES;
 ```
