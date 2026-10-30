@@ -40,7 +40,7 @@ Chỉ cho phép các máy chủ trong dải mạng nội bộ hoặc cấu hình
 **1. Chỉnh sửa file cấu hình MariaDB**
 Mở file cấu hình chính của MariaDB:
 ```bash
-sudo nano /etc/mysql/mariadb.conf.d/50-server.cnf
+sudo vi /etc/mysql/mariadb.conf.d/50-server.cnf
 ```
 Tìm các dòng sau và chỉnh sửa/thêm vào mục `[mysqld]`:
 ```ini
@@ -87,7 +87,7 @@ SHOW MASTER STATUS;
 **1. Chỉnh sửa file cấu hình MariaDB**
 Mở file cấu hình:
 ```bash
-sudo nano /etc/mysql/mariadb.conf.d/50-server.cnf
+sudo vi /etc/mysql/mariadb.conf.d/50-server.cnf
 ```
 Tìm và cấu hình các thông số sau trong block `[mysqld]`:
 ```ini
