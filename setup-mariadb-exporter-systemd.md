@@ -139,8 +139,7 @@ cat > /etc/mysqld_exporter/.my.cnf <<'EOF'
 [client]
 user=exporter
 password=StrongPass@123
-host=127.0.0.1
-port=3306
+socket=/run/mysqld/mysqld.sock
 EOF
 
 chown -R mysqld_exporter:mysqld_exporter /etc/mysqld_exporter
