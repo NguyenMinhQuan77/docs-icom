@@ -2,13 +2,13 @@
 
 **Mô hình triển khai:**
 
-* **Wazuh Manager (Máy chủ trung tâm SIEM):** `192.168.78.223` (Dùng để xem log, dashboard, phân tích và cảnh báo).
-* **Wazuh Agent (Máy được giám sát):** `192.168.78.71` (Nơi phát sinh log, cần theo dõi sự thay đổi file).
+* **Wazuh Manager (Máy chủ trung tâm SIEM):** `192.168.78.71` (Dùng để xem log, dashboard, phân tích và cảnh báo).
+* **Wazuh Agent (Máy được giám sát):** `192.168.78.223` (Nơi phát sinh log, cần theo dõi sự thay đổi file).
 * **Hệ điều hành:** Ubuntu 22.04 (Giả định chung cho cả 2 máy).
 
 ---
 
-## PHẦN 1: CÀI ĐẶT WAZUH MANAGER (TRÊN IP 192.168.78.223)
+## PHẦN 1: CÀI ĐẶT WAZUH MANAGER (TRÊN IP 192.168.78.71)
 
 Chúng ta sẽ sử dụng kịch bản cài đặt tự động (All-in-one installation) của Wazuh bản 4.9. Yêu cầu máy chủ `.223` có ít nhất 4GB RAM.
 
@@ -25,7 +25,7 @@ systemctl stop apache2
 ```
 
 ### Bước 2: Tải và chạy script cài đặt
-Đăng nhập vào máy `192.168.78.223` với quyền `root`. Chạy các lệnh sau:
+Đăng nhập vào máy `192.168.78.71` với quyền `root`. Chạy các lệnh sau:
 ```bash
 # Xóa script cũ nếu có để tránh lỗi XML
 rm -f wazuh-install.sh
@@ -56,18 +56,18 @@ systemctl start nginx
 ```
 
 ### Bước 5: Truy cập Giao diện điều khiển (Dashboard)
-1. Mở trình duyệt web, truy cập: `https://192.168.78.223` (hoặc `https://192.168.78.223:8443` nếu bạn đã đổi cổng ở Bước 4).
+1. Mở trình duyệt web, truy cập: `https://192.168.78.71` (hoặc `https://192.168.78.71:8443` nếu bạn đã đổi cổng ở Bước 4).
 2. Bỏ qua cảnh báo SSL (Proceed to unsafe).
 3. Đăng nhập bằng `admin` và mật khẩu vừa lưu ở Bước 3.
 
 ---
 
-## PHẦN 2: CÀI ĐẶT WAZUH AGENT (TRÊN IP 192.168.78.71)
+## PHẦN 2: CÀI ĐẶT WAZUH AGENT (TRÊN IP 192.168.78.223)
 
 Đây là máy chúng ta cần giám sát. Chúng ta sẽ cài một phần mềm Agent nhỏ để nó kết nối về con `.223`.
 
 ### Bước 1: Thêm Repository của Wazuh
-Đăng nhập vào máy `192.168.78.71` với quyền `root`:
+Đăng nhập vào máy `192.168.78.223` với quyền `root`:
 ```bash
 apt-get update
 apt-get install -y curl apt-transport-https unzip wget libcap2-bin software-properties-common lsb-release gnupg
@@ -84,7 +84,7 @@ apt-get update
 ### Bước 2: Cài đặt và kết nối Agent
 Cài đặt Agent và trỏ về IP của máy Manager (`.223`):
 ```bash
-WAZUH_MANAGER="192.168.78.223" apt-get install wazuh-agent -y
+WAZUH_MANAGER="192.168.78.71" apt-get install wazuh-agent -y
 ```
 
 ### Bước 3: Khởi động Agent
@@ -102,7 +102,7 @@ systemctl start wazuh-agent
 Để giám sát xem có ai đó sửa, xóa, hay tạo file mới trên máy `.71` hay không.
 
 ### Bước 1: Chỉnh sửa cấu hình Agent
-Đứng trên con Agent (`192.168.78.71`), mở file cấu hình:
+Đứng trên con Agent (`192.168.78.223`), mở file cấu hình:
 ```bash
 nano /var/ossec/etc/ossec.conf
 ```
@@ -124,7 +124,7 @@ systemctl restart wazuh-agent
 ## PHẦN 4: XEM LOG VÀ CẢNH BÁO TRÊN DASHBOARD (.223)
 
 1. **Kiểm tra Agent đã kết nối:**
-   Trên web dashboard, click vào logo **Wazuh** -> **Agents**. Bạn sẽ thấy máy `192.168.78.71` ở trạng thái **Active**.
+   Trên web dashboard, click vào logo **Wazuh** -> **Agents**. Bạn sẽ thấy máy `192.168.78.223` ở trạng thái **Active**.
 
 2. **Xem sự kiện Bảo mật (Security Events):**
    Click vào Agent `.71`, chọn tab **Security Events**. Mọi hành động đăng nhập sai mật khẩu (SSH failed login), sudo, hoặc lỗi hệ thống của con `.71` đều được hiện tại đây.
