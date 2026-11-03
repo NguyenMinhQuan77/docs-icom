@@ -123,7 +123,7 @@ START SLAVE;
 
 **4. Kiểm tra Trạng thái Replication**
 ```sql
-SHOW SLAVE STATUS\G;
+clear
 ```
 Hãy chú ý hai dòng sau, nếu cả hai đều báo **Yes** nghĩa là quá trình thiết lập đã thành công:
 *   `Slave_IO_Running: Yes`
