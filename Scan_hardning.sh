@@ -1,5 +1,25 @@
 #!/bin/bash
 
+# ============================================================
+# KHỞI TẠO BIẾN ĐẾM & TỰ ĐỘNG TÍNH TOÁN KẾT QUẢ
+# ============================================================
+TOTAL_PASSED=0
+TOTAL_FAILED=0
+
+# Hàm hook echo để tự động đếm số mục ĐẠT và KHÔNG ĐẠT
+echo() {
+    builtin echo "$@"
+    case "$*" in
+        *"KET LUAN:"*"DAT"*)
+            if [[ "$*" == *"KHONG DAT"* ]]; then
+                ((TOTAL_FAILED++))
+            else
+                ((TOTAL_PASSED++))
+            fi
+            ;;
+    esac
+}
+
 # Lấy phiên bản hệ điều hành
 OS_VERSION=$(awk -F= '/^VERSION_ID=/{gsub(/"/, "", $2); print $2}' /etc/os-release)
 
@@ -2217,6 +2237,30 @@ if [[ "$OS_VERSION" == "22.04" ]]; then
 		echo "KET LUAN: KHONG DAT"
 		echo "LY DO: $reason"
 	fi
+	# ============================================================
+	# BÁO CÁO TỔNG KẾT VÀ TÍNH TỸ LỆ PHẦN TRĂM HOÀN THÀNH
+	# ============================================================
+	TOTAL=$((TOTAL_PASSED + TOTAL_FAILED))
+	if [[ $TOTAL -gt 0 ]]; then
+		PERCENT=$(awk -v p="$TOTAL_PASSED" -v t="$TOTAL" 'BEGIN { printf "%.2f", (p / t) * 100 }')
+		echo ""
+		echo "============================================================"
+		echo "               BÁO CÁO TỔNG KẾT SCAN HARDENING              "
+		echo "============================================================"
+		echo "Tổng số mục kiểm tra : $TOTAL"
+		echo "Số mục ĐẠT (Pass)    : $TOTAL_PASSED"
+		echo "Số mục KHÔNG ĐẠT     : $TOTAL_FAILED"
+		echo "Tỷ lệ hoàn thành     : $PERCENT%"
+		echo "------------------------------------------------------------"
+		IS_PASS=$(awk -v p="$PERCENT" 'BEGIN { if (p >= 80.0) print "1"; else print "0" }')
+		if [[ "$IS_PASS" == "1" ]]; then
+			echo "KẾT LUẬN CHUNG       : ✅ ĐẠT TIÊU CHUẨN AN TOÀN (>= 80%)"
+		else
+			echo "KẾT LUẬN CHUNG       : ❌ CHƯA ĐẠT TIÊU CHUẨN (< 80%)"
+		fi
+		echo "============================================================"
+	fi
+
 	else
     echo "Phiên bản không được hỗ trợ bởi script này."
 fi
